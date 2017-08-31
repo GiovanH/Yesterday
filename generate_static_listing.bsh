@@ -1,0 +1,26 @@
+#!/bin/bash
+
+ROOT=.
+HTTP=""
+OUTPUT="../index.html" 
+cd calendars
+
+cat "../header.html" > $OUTPUT
+
+i=0
+echo "<UL>" >> $OUTPUT
+#for filepath in `find "$ROOT" -maxdepth 1 -mindepth 1 -type d| sort`; do
+for filepath in `find "$ROOT" -maxdepth 1 -mindepth 1| sort`; do
+  path=`basename "$filepath"`
+  echo "  <LI>$path</LI>" >> $OUTPUT
+  echo "  <UL>" >> $OUTPUT
+  for i in `find "$filepath" -maxdepth 1 -mindepth 1 -type f| sort`; do
+    file=`basename "$i"`
+    entries=`grep -o "BEGIN:VEVENT" "$path/$file" | wc -w`
+    echo "    <LI><a href=\"calendars/$path/$file\">$file</a> ($entries entries)</LI>" >> $OUTPUT
+  done
+  echo "  </UL>" >> $OUTPUT
+done
+echo "</UL>" >> $OUTPUT
+
+echo \<span class='generated'\>Page generated $(date)\</span\> >> $OUTPUT
